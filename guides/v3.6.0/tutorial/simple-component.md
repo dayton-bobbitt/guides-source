@@ -37,20 +37,20 @@ To start, let's move the rental display details for a single rental from the `re
 ```handlebars {data-filename="app/templates/components/rental-listing.hbs" data-diff="-1,+2,+3,+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,+16,+17,+18,+19"}
 {{yield}}
 <article class="listing">
-  <img src={{rental.image}} alt="">
+  <img src={{this.rental.image}} alt="">
   <div class="details">
-    <h3>{{rental.title}}</h3>
+    <h3>{{this.rental.title}}</h3>
     <div class="detail owner">
-      <span>Owner:</span> {{rental.owner}}
+      <span>Owner:</span> {{this.rental.owner}}
     </div>
     <div class="detail type">
-      <span>Type:</span> {{rental.category}}
+      <span>Type:</span> {{this.rental.category}}
     </div>
     <div class="detail location">
-      <span>Location:</span> {{rental.city}}
+      <span>Location:</span> {{this.rental.city}}
     </div>
     <div class="detail bedrooms">
-      <span>Number of bedrooms:</span> {{rental.bedrooms}}
+      <span>Number of bedrooms:</span> {{this.rental.bedrooms}}
     </div>
   </div>
 </article>
@@ -71,9 +71,9 @@ with our new `rental-listing` component:
   {{/link-to}}
 </div>
 
-{{#each model as |rentalUnit|}}
+{{#each this.model as |rentalUnit|}}
   {{rental-listing rental=rentalUnit}}
-{{#each model as |rental|}}
+{{#each this.model as |rental|}}
   <article class="listing">
     <h3>{{rental.title}}</h3>
     <div class="detail owner">
@@ -111,24 +111,24 @@ giving it the `image` class name so that our test can find it.
 
 ```handlebars {data-filename="app/templates/components/rental-listing.hbs" data-diff="+2,+3,+5,+6"}
 <article class="listing">
-  <a class="image {{if isWide "wide"}}"
+  <a class="image {{if this.isWide "wide"}}"
     role="button">
-    <img src={{rental.image}} alt="">
+    <img src={{this.rental.image}} alt="">
     <small>View Larger</small>
   </a>
   <div class="details">
-    <h3>{{rental.title}}</h3>
+    <h3>{{this.rental.title}}</h3>
     <div class="detail owner">
-      <span>Owner:</span> {{rental.owner}}
+      <span>Owner:</span> {{this.rental.owner}}
     </div>
     <div class="detail type">
-      <span>Type:</span> {{rental.category}}
+      <span>Type:</span> {{this.rental.category}}
     </div>
     <div class="detail location">
-      <span>Location:</span> {{rental.city}}
+      <span>Location:</span> {{this.rental.city}}
     </div>
     <div class="detail bedrooms">
-      <span>Number of bedrooms:</span> {{rental.bedrooms}}
+      <span>Number of bedrooms:</span> {{this.rental.bedrooms}}
     </div>
   </div>
 </article>
@@ -145,45 +145,9 @@ export default Component.extend({
 });
 ```
 
-To allow the user to widen the image, we will need to add an action that toggles the value of `isWide`.
-Let's call this action `toggleImageSize`
-
-```handlebars {data-filename="app/templates/components/rental-listing.hbs" data-diff="-2,+3,+4,+4,+6,+7"}
-<article class="listing">
-  <a class="image {{if isWide "wide"}}">
-  <a
-    onclick={{action "toggleImageSize"}}
-    class="image {{if isWide "wide"}}"
-    role="button"
-  >
-    <img src={{rental.image}} alt="">
-    <small>View Larger</small>
-  </a>
-  <div class="details">
-    <h3>{{rental.title}}</h3>
-    <div class="detail owner">
-      <span>Owner:</span> {{rental.owner}}
-    </div>
-    <div class="detail type">
-      <span>Type:</span> {{rental.category}}
-    </div>
-    <div class="detail location">
-      <span>Location:</span> {{rental.city}}
-    </div>
-    <div class="detail bedrooms">
-      <span>Number of bedrooms:</span> {{rental.bedrooms}}
-    </div>
-  </div>
-</article>
-```
-
-Clicking the anchor element will send the action to the component.
-Ember will then go into the `actions` hash and call the `toggleImageSize` function.
-
-An [actions hash](../../templates/actions/) is an object in the component that contains functions.
-These functions are called when the user interacts with the UI, such as clicking.
-
-Let's create the `toggleImageSize` function and toggle the `isWide` property on our component:
+To allow the user to widen the image, we will need to add an action that toggles
+the value of `isWide`. Let's create the `toggleImageSize` action to toggle the
+`isWide` property on our component:
 
 ```javascript {data-filename="app/components/rental-listing.js" data-diff="-4,+5,+6,+7,+8,+9,+10"}
 import Component from '@ember/component';
@@ -199,9 +163,46 @@ export default Component.extend({
 });
 ```
 
+In order to trigger this action, we need to use the `{{action}}` helper in our
+template:
 
-Now when we click the image or the `View Larger` link in our browser, we  see our image show larger.
-When we click the enlarged image again, we see it smaller.
+```handlebars {data-filename="app/templates/components/rental-listing.hbs" data-diff="-2,+3,+4,+4,+6,+7"}
+<article class="listing">
+  <a class="image {{if this.isWide "wide"}}">
+  <a
+    onclick={{action "toggleImageSize"}}
+    class="image {{if this.isWide "wide"}}"
+    role="button"
+  >
+    <img src={{this.rental.image}} alt="">
+    <small>View Larger</small>
+  </a>
+  <div class="details">
+    <h3>{{this.rental.title}}</h3>
+    <div class="detail owner">
+      <span>Owner:</span> {{this.rental.owner}}
+    </div>
+    <div class="detail type">
+      <span>Type:</span> {{this.rental.category}}
+    </div>
+    <div class="detail location">
+      <span>Location:</span> {{this.rental.city}}
+    </div>
+    <div class="detail bedrooms">
+      <span>Number of bedrooms:</span> {{this.rental.bedrooms}}
+    </div>
+  </div>
+</article>
+```
+
+So, when we click on the anchor element, Ember will go into the `actions` hash
+and call the `toggleImageSize` function. An
+[actions hash](../../templates/actions/) is an object in the component that
+contains functions. These functions are called when the user interacts with the
+UI, such as clicking.
+
+So, when we click the image or the `View Larger` link in our browser, we see our
+image shown larger. When we click the enlarged image we again see it smaller.
 
 ![rental listing with expand](/images/simple-component/styled-rental-listings.png)
 

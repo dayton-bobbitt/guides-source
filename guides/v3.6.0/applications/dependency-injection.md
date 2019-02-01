@@ -10,9 +10,9 @@ An [`ApplicationInstance`](https://emberjs.com/api/ember/release/classes/Applica
 Application instances provide a means to "look up" (i.e. instantiate and / or retrieve) objects.
 
 > _Note: Although an `Application` serves as the primary registry for an app,
-each `ApplicationInstance` can also serve as a registry.
-Instance-level registrations are useful for providing instance-level customizations,
-such as A/B testing of a feature._
+> each `ApplicationInstance` can also serve as a registry.
+> Instance-level registrations are useful for providing instance-level customizations,
+> such as A/B testing of a feature._
 
 ## Factory Registrations
 
@@ -112,7 +112,7 @@ export default {
 
 Once a factory is registered, it can be "injected" where it is needed.
 
-Factories can be injected into whole "types" of factories with *type injections*. For example:
+Factories can be injected into whole "types" of factories with _type injections_. For example:
 
 ```javascript {data-filename=app/initializers/logger.js}
 import EmberObject from '@ember/object';
@@ -247,8 +247,10 @@ export default Component.extend({
     if (!this.song) {
       return null;
     }
+
     let applicationInstance = getOwner(this);
     let audioType = this.song.audioType;
+
     return applicationInstance.lookup(`service:audio-${audioType}`);
   }),
 
